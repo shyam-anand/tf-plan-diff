@@ -1,0 +1,54 @@
+{
+  "module.cloud_run.google_cloud_run_v2_service.backend": {
+    "actions": [
+      "update"
+    ],
+    "changes": {
+      "template[0].containers[app]": {
+        "image": {
+          "before": "app:1",
+          "after": "app:2"
+        }
+      },
+      "template[0].containers[app].env[AA]": {
+        "name": {
+          "before": null,
+          "after": "AA"
+        },
+        "value": {
+          "before": null,
+          "after": "new"
+        }
+      },
+      "template[0].containers[app].env[B]": {
+        "value": {
+          "before": "2",
+          "after": "3"
+        }
+      },
+      "template[0].containers[app].env[OLD]": {
+        "name": {
+          "before": "OLD",
+          "after": null
+        },
+        "value": {
+          "before": "o",
+          "after": null
+        }
+      },
+      "template[0].containers[app].env[SECRET]": {
+        "value": {
+          "before": "old-secret",
+          "after": "new-secret"
+        }
+      },
+      "uri": {
+        "before": "https://backend-old.example.com",
+        "after": {
+          "unknown": true
+        }
+      }
+    }
+  }
+}
+exit=0

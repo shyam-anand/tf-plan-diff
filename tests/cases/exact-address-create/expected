@@ -1,0 +1,36 @@
+{
+  "module.cloud_run.google_cloud_run_v2_service.frontend": {
+    "actions": [
+      "create"
+    ],
+    "changes": {
+      "name": {
+        "before": null,
+        "after": "frontend"
+      },
+      "template[0].containers[web]": {
+        "name": {
+          "before": null,
+          "after": "web"
+        }
+      },
+      "template[0].containers[web].env[X]": {
+        "name": {
+          "before": null,
+          "after": "X"
+        },
+        "value": {
+          "before": null,
+          "after": "1"
+        }
+      },
+      "uri": {
+        "before": null,
+        "after": {
+          "unknown": true
+        }
+      }
+    }
+  }
+}
+exit=0

@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+# Show changed attributes in a Terraform plan as JSON, keyed by resource and attribute path.
+# Usage: tf-plan-diff [flags] <plan> [resource] [attribute]
+#   plan:      binary plan file, JSON from `terraform show -json`, or `-` for JSON on stdin.
+#   resource:  exact address, or space-separated words that must all appear in it
+#              (case-insensitive), e.g. "cloud run backend". Empty = all resources.
+#   attribute: substring of the attribute path, e.g. "env".
+#   --show-sensitive-names:  reveal sensitive `name` fields (list-item labels and `.name` leaves).
+#   --show-sensitive-values: reveal all other sensitive leaves.
+#   --show-sensitive:        both.
+set -euo pipefail
+
+usage="usage: tf-plan-diff [--show-sensitive|--show-sensitive-names|--show-sensitive-values] <plan> [resource] [attribute]"
+
+names=false
+values=false
+args=()
+for a in "$@"; do
+  case $a in
+    --show-sensitive) names=true values=true ;;
+    --show-sensitive-names) names=true ;;
+    --show-sensitive-values) values=true ;;
+    -h | --help) echo "$usage"; exit 0 ;;
+    -) args+=("$a") ;;
+    -*) echo "unknown flag: $a" >&2; exit 1 ;;
+    *) args+=("$a") ;;
+  esac
+done
+
+if [[ ${#args[@]} -lt 1 || ${#args[@]} -gt 3 ]]; then
+  echo "$usage" >&2
+  exit 1
+fi
+
+if [[ ${args[0]} == - ]]; then
+  plan=$(cat)
+elif jq -e . "${args[0]}" >/dev/null 2>&1; then
+  plan=$(cat "${args[0]}")
+else
+  plan=$(terraform show -json "${args[0]}")
+fi
+
+filter='
+def get($p): try getpath($p) catch null;
+# Sensitivity maps mark a subtree with `true`, so any prefix may flag the leaf.
+def flagged($m; $p): any(range(0; ($p | length) + 1); . as $i | ($m | get($p[:$i])) == true);
+def keyable: type == "array" and length > 0
+  and all(.[]; type == "object" and (.name | type) == "string")
+  and (map(.name) | unique | length) == length;
+
+# Flattens one side of a change into leaves and list items, keyed by a step path in
+# which items of uniquely named lists are {name: ...}, so an insert does not shift the rest.
+def flatten($doc; $sens; $unk):
+  reduce (([$doc | paths(scalars)] + [$unk | paths(. == true)]) | unique[]) as $p
+    ({leaves: {}, items: {}};
+     (reduce range(0; $p | length) as $i ({steps: [], items: []};
+        $p[$i] as $k | ($doc | get($p[:$i])) as $parent
+        | if ($k | type) == "number" and ($parent | keyable) then
+            .steps += [{name: $parent[$k].name}]
+            | .items += [{key: (.steps | tojson), index: $k, hidden: flagged($sens; $p[:$i + 1])}]
+          else .steps += [$k] end)) as $w
+     | .leaves[$w.steps | tojson] = {
+         steps: $w.steps, last: $p[-1], value: ($doc | get($p)),
+         sensitive: flagged($sens; $p), unknown: (($unk | get($p)) == true)}
+     | reduce $w.items[] as $it (.; .items[$it.key] = $it));
+
+# Display path. A named item whose name is hidden shows its index in `after`, or
+# `was N` (its index in `before`) if it was removed, so labels never collide.
+def display($steps; $B; $A):
+  reduce range(0; $steps | length) as $i ("";
+    $steps[$i] as $s
+    | if ($s | type) == "object" then
+        ($steps[:$i + 1] | tojson) as $k
+        | $A.items[$k] as $ai | $B.items[$k] as $bi
+        | if (($ai.hidden // false) or ($bi.hidden // false)) and ($names | not) then
+            . + (if $ai then "[\($ai.index)]" else "[was \($bi.index)]" end)
+          else . + "[\($s.name)]" end
+      elif ($s | type) == "number" then . + "[\($s)]"
+      else . + ".\($s)" end)
+  | ltrimstr(".");
+
+def under_unknown($steps; $leaves):
+  any(range(0; $steps | length); . as $i | $leaves[$steps[:$i] | tojson].unknown == true);
+def has_children($steps; $leaves):
+  ($steps | length) as $n | any($leaves[]; (.steps | length) > $n and .steps[:$n] == $steps);
+
+def matches($addrs):
+  if $q == "" then true
+  elif any($addrs[]; . == $q) then . == $q
+  else ascii_downcase as $a
+    | all($q | ascii_downcase | split(" ")[] | select(. != ""); . as $w | $a | contains($w))
+  end;
+
+[.resource_changes[]? | select(.change.actions != ["no-op"])] as $rcs
+| ($rcs | map(.address)) as $addrs
+| [ $rcs[]
+  | select(.address | matches($addrs))
+  | .change as $c
+  | flatten($c.before // {}; $c.before_sensitive // {}; {}) as $B
+  | flatten($c.after // {}; $c.after_sensitive // {}; $c.after_unknown // {}) as $A
+  | [ ($B.leaves + $A.leaves | keys[]) as $k
+      | $B.leaves[$k] as $x | $A.leaves[$k] as $y
+      | select($x.value != $y.value or ($y.unknown // false))
+      # A subtree that becomes unknown is reported per old leaf, not as one null -> unknown entry.
+      | select(($x == null and ($y.unknown // false) and has_children($y.steps; $B.leaves)) | not)
+      | (if ($y // $x).last == "name" then $names else $values end) as $reveal
+      | ($y // $x).steps as $s
+      # Fields directly under a list item are grouped under the item: env[X]: {name, value}.
+      | (if ($s | length) >= 2 and ($s[-1] | type) == "string" and ($s[-2] | type) != "string"
+         then display($s[:-1]; $B; $A) else null end) as $group
+      | {key: display($s; $B; $A), group: $group, field: $s[-1], value: {
+          before: (if $x == null then null
+                   elif $x.sensitive and ($reveal | not) then {sensitive: true}
+                   else $x.value end),
+          after: (if $y == null then (if under_unknown($x.steps; $A.leaves) then {unknown: true} else null end)
+                  elif $y.unknown then {unknown: true}
+                  elif $y.sensitive and ($reveal | not) then {sensitive: true}
+                  else $y.value end)}}
+      | select(.key | contains($attr))
+    ] as $changes
+  | select($changes | length > 0)
+  | {key: .address, value: {actions: $c.actions, changes: (reduce ($changes | sort_by(.group // .key, .key))[] as $e ({};
+      if $e.group then .[$e.group][$e.field] = $e.value else .[$e.key] = $e.value end))}}
+  ]
+| from_entries
+'
+
+out=$(jq --arg q "${args[1]:-}" --arg attr "${args[2]:-}" \
+  --argjson names "$names" --argjson values "$values" "$filter" <<<"$plan")
+
+if [[ $out == "{}" && -n "${args[1]:-}${args[2]:-}" ]]; then
+  echo "no changes match; changed resources:" >&2
+  jq -r '.resource_changes[]? | select(.change.actions != ["no-op"]) | "  " + .address' <<<"$plan" >&2
+  exit 1
+fi
+printf '%s\n' "$out"

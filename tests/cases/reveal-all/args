@@ -1,0 +1,3 @@
+--show-sensitive
+tests/fixtures/synthetic.json
+cloud run backend

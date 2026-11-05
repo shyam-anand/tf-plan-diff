@@ -1,0 +1,16 @@
+{
+  "module.cloud_run.google_cloud_run_v2_service.backend": {
+    "actions": [
+      "update"
+    ],
+    "changes": {
+      "template[0].containers[app]": {
+        "image": {
+          "before": "app:1",
+          "after": "app:2"
+        }
+      }
+    }
+  }
+}
+exit=0

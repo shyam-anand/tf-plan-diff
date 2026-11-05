@@ -1,0 +1,252 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.15.8",
+  "resource_changes": [
+    {
+      "address": "terraform_data.plain",
+      "mode": "managed",
+      "type": "terraform_data",
+      "name": "plain",
+      "provider_name": "terraform.io/builtin/terraform",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "before": {
+          "id": "97f1728c-f014-7a31-c68b-f54cfff7b758",
+          "input": {
+            "ports": [
+              {
+                "name": "http",
+                "port": 80
+              },
+              {
+                "name": "http",
+                "port": 81
+              }
+            ]
+          },
+          "output": {
+            "ports": [
+              {
+                "name": "http",
+                "port": 80
+              },
+              {
+                "name": "http",
+                "port": 81
+              }
+            ]
+          },
+          "triggers_replace": null
+        },
+        "after": {
+          "id": "97f1728c-f014-7a31-c68b-f54cfff7b758",
+          "input": {
+            "ports": [
+              {
+                "name": "http",
+                "port": 80
+              },
+              {
+                "name": "http",
+                "port": 82
+              }
+            ]
+          },
+          "triggers_replace": null
+        },
+        "after_unknown": {
+          "input": {
+            "ports": [
+              {},
+              {}
+            ]
+          },
+          "output": true
+        },
+        "before_sensitive": {
+          "input": {
+            "ports": [
+              {},
+              {}
+            ]
+          },
+          "output": {
+            "ports": [
+              {},
+              {}
+            ]
+          }
+        },
+        "after_sensitive": {
+          "input": {
+            "ports": [
+              {},
+              {}
+            ]
+          },
+          "output": {}
+        }
+      }
+    },
+    {
+      "address": "terraform_data.svc",
+      "mode": "managed",
+      "type": "terraform_data",
+      "name": "svc",
+      "provider_name": "terraform.io/builtin/terraform",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "before": {
+          "id": "3aef0225-5a04-e410-b613-8fc07897e796",
+          "input": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "A",
+                    "value": "1"
+                  },
+                  {
+                    "name": "B",
+                    "value": "b1"
+                  },
+                  {
+                    "name": "SECRET",
+                    "value": "s1"
+                  },
+                  {
+                    "name": "GONE",
+                    "value": "x"
+                  }
+                ],
+                "name": "c1"
+              }
+            ],
+            "image": "img:1"
+          },
+          "output": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "A",
+                    "value": "1"
+                  },
+                  {
+                    "name": "B",
+                    "value": "b1"
+                  },
+                  {
+                    "name": "SECRET",
+                    "value": "s1"
+                  },
+                  {
+                    "name": "GONE",
+                    "value": "x"
+                  }
+                ],
+                "name": "c1"
+              }
+            ],
+            "image": "img:1"
+          },
+          "triggers_replace": null
+        },
+        "after": {
+          "id": "3aef0225-5a04-e410-b613-8fc07897e796",
+          "input": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "A",
+                    "value": "1"
+                  },
+                  {
+                    "name": "AA",
+                    "value": "new"
+                  },
+                  {
+                    "name": "B",
+                    "value": "b2"
+                  },
+                  {
+                    "name": "SECRET",
+                    "value": "s2"
+                  }
+                ],
+                "name": "c1"
+              }
+            ],
+            "image": "img:2"
+          },
+          "triggers_replace": null
+        },
+        "after_unknown": {
+          "input": {
+            "containers": [
+              {
+                "env": [
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              }
+            ]
+          },
+          "output": true
+        },
+        "before_sensitive": {
+          "input": {
+            "containers": [
+              {
+                "env": [
+                  {},
+                  {},
+                  {
+                    "value": true
+                  },
+                  {}
+                ]
+              }
+            ]
+          },
+          "output": {
+            "containers": [
+              {
+                "env": [
+                  {},
+                  {},
+                  {},
+                  {}
+                ]
+              }
+            ]
+          }
+        },
+        "after_sensitive": {
+          "input": {
+            "containers": [
+              {
+                "env": [
+                  {},
+                  {},
+                  {},
+                  {
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          },
+          "output": {}
+        }
+      }
+    }
+  ]
+}

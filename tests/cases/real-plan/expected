@@ -1,0 +1,161 @@
+{
+  "terraform_data.plain": {
+    "actions": [
+      "update"
+    ],
+    "changes": {
+      "input.ports[1]": {
+        "port": {
+          "before": 81,
+          "after": 82
+        }
+      },
+      "output.ports[0]": {
+        "name": {
+          "before": "http",
+          "after": {
+            "unknown": true
+          }
+        },
+        "port": {
+          "before": 80,
+          "after": {
+            "unknown": true
+          }
+        }
+      },
+      "output.ports[1]": {
+        "name": {
+          "before": "http",
+          "after": {
+            "unknown": true
+          }
+        },
+        "port": {
+          "before": 81,
+          "after": {
+            "unknown": true
+          }
+        }
+      }
+    }
+  },
+  "terraform_data.svc": {
+    "actions": [
+      "update"
+    ],
+    "changes": {
+      "input.containers[c1].env[AA]": {
+        "name": {
+          "before": null,
+          "after": "AA"
+        },
+        "value": {
+          "before": null,
+          "after": "new"
+        }
+      },
+      "input.containers[c1].env[B]": {
+        "value": {
+          "before": "b1",
+          "after": "b2"
+        }
+      },
+      "input.containers[c1].env[GONE]": {
+        "name": {
+          "before": "GONE",
+          "after": null
+        },
+        "value": {
+          "before": "x",
+          "after": null
+        }
+      },
+      "input.containers[c1].env[SECRET]": {
+        "value": {
+          "before": {
+            "sensitive": true
+          },
+          "after": {
+            "sensitive": true
+          }
+        }
+      },
+      "input.image": {
+        "before": "img:1",
+        "after": "img:2"
+      },
+      "output.containers[c1]": {
+        "name": {
+          "before": "c1",
+          "after": {
+            "unknown": true
+          }
+        }
+      },
+      "output.containers[c1].env[A]": {
+        "name": {
+          "before": "A",
+          "after": {
+            "unknown": true
+          }
+        },
+        "value": {
+          "before": "1",
+          "after": {
+            "unknown": true
+          }
+        }
+      },
+      "output.containers[c1].env[B]": {
+        "name": {
+          "before": "B",
+          "after": {
+            "unknown": true
+          }
+        },
+        "value": {
+          "before": "b1",
+          "after": {
+            "unknown": true
+          }
+        }
+      },
+      "output.containers[c1].env[GONE]": {
+        "name": {
+          "before": "GONE",
+          "after": {
+            "unknown": true
+          }
+        },
+        "value": {
+          "before": "x",
+          "after": {
+            "unknown": true
+          }
+        }
+      },
+      "output.containers[c1].env[SECRET]": {
+        "name": {
+          "before": "SECRET",
+          "after": {
+            "unknown": true
+          }
+        },
+        "value": {
+          "before": "s1",
+          "after": {
+            "unknown": true
+          }
+        }
+      },
+      "output.image": {
+        "before": "img:1",
+        "after": {
+          "unknown": true
+        }
+      }
+    }
+  }
+}
+exit=0

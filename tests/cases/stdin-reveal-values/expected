@@ -1,0 +1,14 @@
+{
+  "google_secret_manager_secret_version.db": {
+    "actions": [
+      "update"
+    ],
+    "changes": {
+      "secret_data": {
+        "before": "hunter2",
+        "after": "hunter3"
+      }
+    }
+  }
+}
+exit=0

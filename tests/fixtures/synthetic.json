@@ -1,0 +1,89 @@
+{
+  "format_version": "1.2",
+  "resource_changes": [
+    {
+      "address": "module.cloud_run.google_cloud_run_v2_service.backend",
+      "change": {
+        "actions": ["update"],
+        "before": {
+          "name": "backend",
+          "uri": "https://backend-old.example.com",
+          "template": [{"containers": [{"name": "app", "image": "app:1", "env": [
+            {"name": "A", "value": "1"},
+            {"name": "B", "value": "2"},
+            {"name": "OLD", "value": "o"},
+            {"name": "SECRET", "value": "old-secret"}
+          ]}]}]
+        },
+        "after": {
+          "name": "backend",
+          "uri": null,
+          "template": [{"containers": [{"name": "app", "image": "app:2", "env": [
+            {"name": "A", "value": "1"},
+            {"name": "AA", "value": "new"},
+            {"name": "B", "value": "3"},
+            {"name": "SECRET", "value": "new-secret"}
+          ]}]}]
+        },
+        "after_unknown": {"uri": true},
+        "before_sensitive": {"template": [{"containers": [{"env": true}]}]},
+        "after_sensitive": {"template": [{"containers": [{"env": true}]}]}
+      }
+    },
+    {
+      "address": "module.cloud_run.google_cloud_run_v2_service.frontend",
+      "change": {
+        "actions": ["create"],
+        "before": null,
+        "after": {"name": "frontend", "uri": null, "template": [{"containers": [{"name": "web", "env": [{"name": "X", "value": "1"}]}]}]},
+        "after_unknown": {"uri": true},
+        "before_sensitive": false,
+        "after_sensitive": {}
+      }
+    },
+    {
+      "address": "google_secret_manager_secret_version.db",
+      "change": {
+        "actions": ["update"],
+        "before": {"secret_data": "hunter2"},
+        "after": {"secret_data": "hunter3"},
+        "after_unknown": {},
+        "before_sensitive": true,
+        "after_sensitive": true
+      }
+    },
+    {
+      "address": "google_storage_bucket.old",
+      "change": {
+        "actions": ["delete"],
+        "before": {"name": "old-bucket", "location": "US"},
+        "after": null,
+        "after_unknown": {},
+        "before_sensitive": {},
+        "after_sensitive": false
+      }
+    },
+    {
+      "address": "google_compute_firewall.dup",
+      "change": {
+        "actions": ["update"],
+        "before": {"allow": [{"name": "tcp", "ports": ["80"]}, {"name": "tcp", "ports": ["443"]}]},
+        "after": {"allow": [{"name": "tcp", "ports": ["80"]}, {"name": "tcp", "ports": ["8443"]}]},
+        "after_unknown": {},
+        "before_sensitive": {},
+        "after_sensitive": {}
+      }
+    },
+    {
+      "address": "google_project_iam_member.unchanged",
+      "change": {
+        "actions": ["no-op"],
+        "before": {"role": "roles/viewer"},
+        "after": {"role": "roles/viewer"},
+        "after_unknown": {},
+        "before_sensitive": {},
+        "after_sensitive": {}
+      }
+    }
+  ]
+}

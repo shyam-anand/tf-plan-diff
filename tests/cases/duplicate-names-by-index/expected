@@ -1,0 +1,14 @@
+{
+  "google_compute_firewall.dup": {
+    "actions": [
+      "update"
+    ],
+    "changes": {
+      "allow[1].ports[0]": {
+        "before": "443",
+        "after": "8443"
+      }
+    }
+  }
+}
+exit=0

@@ -1,0 +1,4 @@
+--show-sensitive-names
+tests/fixtures/synthetic.json
+cloud run backend
+env

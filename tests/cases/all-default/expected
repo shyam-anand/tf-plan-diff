@@ -1,0 +1,144 @@
+{
+  "module.cloud_run.google_cloud_run_v2_service.backend": {
+    "actions": [
+      "update"
+    ],
+    "changes": {
+      "template[0].containers[app]": {
+        "image": {
+          "before": "app:1",
+          "after": "app:2"
+        }
+      },
+      "template[0].containers[app].env[1]": {
+        "name": {
+          "before": null,
+          "after": {
+            "sensitive": true
+          }
+        },
+        "value": {
+          "before": null,
+          "after": {
+            "sensitive": true
+          }
+        }
+      },
+      "template[0].containers[app].env[2]": {
+        "value": {
+          "before": {
+            "sensitive": true
+          },
+          "after": {
+            "sensitive": true
+          }
+        }
+      },
+      "template[0].containers[app].env[3]": {
+        "value": {
+          "before": {
+            "sensitive": true
+          },
+          "after": {
+            "sensitive": true
+          }
+        }
+      },
+      "template[0].containers[app].env[was 2]": {
+        "name": {
+          "before": {
+            "sensitive": true
+          },
+          "after": null
+        },
+        "value": {
+          "before": {
+            "sensitive": true
+          },
+          "after": null
+        }
+      },
+      "uri": {
+        "before": "https://backend-old.example.com",
+        "after": {
+          "unknown": true
+        }
+      }
+    }
+  },
+  "module.cloud_run.google_cloud_run_v2_service.frontend": {
+    "actions": [
+      "create"
+    ],
+    "changes": {
+      "name": {
+        "before": null,
+        "after": "frontend"
+      },
+      "template[0].containers[web]": {
+        "name": {
+          "before": null,
+          "after": "web"
+        }
+      },
+      "template[0].containers[web].env[X]": {
+        "name": {
+          "before": null,
+          "after": "X"
+        },
+        "value": {
+          "before": null,
+          "after": "1"
+        }
+      },
+      "uri": {
+        "before": null,
+        "after": {
+          "unknown": true
+        }
+      }
+    }
+  },
+  "google_secret_manager_secret_version.db": {
+    "actions": [
+      "update"
+    ],
+    "changes": {
+      "secret_data": {
+        "before": {
+          "sensitive": true
+        },
+        "after": {
+          "sensitive": true
+        }
+      }
+    }
+  },
+  "google_storage_bucket.old": {
+    "actions": [
+      "delete"
+    ],
+    "changes": {
+      "location": {
+        "before": "US",
+        "after": null
+      },
+      "name": {
+        "before": "old-bucket",
+        "after": null
+      }
+    }
+  },
+  "google_compute_firewall.dup": {
+    "actions": [
+      "update"
+    ],
+    "changes": {
+      "allow[1].ports[0]": {
+        "before": "443",
+        "after": "8443"
+      }
+    }
+  }
+}
+exit=0
