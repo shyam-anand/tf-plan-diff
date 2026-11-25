@@ -41,11 +41,20 @@ Tested with jq 1.8.1 and Terraform 1.15.8.
 ## Install
 
 ```sh
-curl -fsSLo ~/.local/bin/tf-plan-diff https://raw.githubusercontent.com/shyam-anand/tf-plan-diff/main/tf-plan-diff
-chmod +x ~/.local/bin/tf-plan-diff
+git clone https://github.com/shyam-anand/tf-plan-diff.git
+cd tf-plan-diff
+make install                       # into /usr/local/bin; may need sudo
+make install PREFIX=$HOME/.local   # or into ~/.local/bin, no sudo
 ```
 
-Or clone the repo and put `tf-plan-diff` on your `PATH`.
+`make uninstall` (with the same `PREFIX`) removes it, and `make test` runs the tests.
+
+Without cloning, download a release directly:
+
+```sh
+curl -fsSLo ~/.local/bin/tf-plan-diff https://raw.githubusercontent.com/shyam-anand/tf-plan-diff/v0.1.0/tf-plan-diff
+chmod +x ~/.local/bin/tf-plan-diff
+```
 
 ## Usage
 
